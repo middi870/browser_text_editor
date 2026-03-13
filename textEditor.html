@@ -249,6 +249,75 @@
     .download-btn { color: var(--accent); border-color: rgba(240,165,0,0.3); }
     .download-btn:hover { background: rgba(240,165,0,0.1); border-color: var(--accent); }
 
+    /* ── MOBILE HAMBURGER ── */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      color: var(--text);
+      font-size: 0.85rem;
+      width: 28px;
+      height: 28px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .mobile-menu-btn:hover { background: var(--surface2); }
+
+    .mobile-dropdown {
+      position: absolute;
+      top: 40px;
+      left: 0; right: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border2);
+      z-index: 300;
+      display: none;
+      flex-direction: column;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+    }
+    .mobile-dropdown.open { display: flex; }
+    .mobile-dropdown .m-section { padding: 4px 0; border-bottom: 1px solid var(--border); }
+    .mobile-dropdown .m-section:last-child { border-bottom: none; }
+    .mobile-dropdown .m-label {
+      font-size: 0.62rem; color: var(--muted);
+      padding: 6px 14px 2px; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .mobile-dropdown button {
+      background: none; border: none; color: var(--text);
+      font-family: var(--mono); font-size: 0.78rem;
+      text-align: left; padding: 10px 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; transition: background 0.1s;
+    }
+    .mobile-dropdown button:hover { background: var(--surface2); color: var(--accent); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      /* hide desktop menu, show hamburger */
+      .menubar { display: none; }
+      .mobile-menu-btn { display: flex; }
+
+      /* hide centre filename, just show in status bar */
+      .titlebar-center { display: none; }
+
+      /* collapse action btn labels */
+      .action-btn span.btn-label { display: none; }
+      .action-btn { padding: 4px 8px; }
+
+      /* logo shorter */
+      .app-logo span { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      /* hide Open button too, keep only Download + theme toggle */
+      .action-btn.open-btn { display: none; }
+    }
+
     /* ── TAB BAR ── */
     .tabbar {
       height: 36px;
@@ -542,6 +611,7 @@
 <div class="titlebar">
   <div class="titlebar-left">
     <div class="app-logo">Nova <span>editor</span></div>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()" title="Menu">☰</button>
 
     <div class="menubar">
       <!-- File menu -->
@@ -611,15 +681,46 @@
   </div>
 
   <div class="titlebar-right">
-    <button class="action-btn" title="Open file (Ctrl+O)" onclick="openFile()">
-      <i class="fas fa-folder-open"></i> Open
+    <button class="action-btn open-btn" title="Open file (Ctrl+O)" onclick="openFile()">
+      <i class="fas fa-folder-open"></i><span class="btn-label"> Open</span>
     </button>
     <button class="action-btn download-btn" title="Download file (Ctrl+S)" onclick="saveFile()">
-      <i class="fas fa-download"></i> Download
+      <i class="fas fa-download"></i><span class="btn-label"> Download</span>
     </button>
     <button class="icon-btn" title="Toggle theme (Ctrl+Shift+T)" onclick="toggleTheme()">
       <i class="fas fa-circle-half-stroke"></i>
     </button>
+  </div>
+</div>
+
+<!-- ── MOBILE DROPDOWN ── -->
+<div class="mobile-dropdown" id="mobileDropdown">
+  <div class="m-section">
+    <div class="m-label">File</div>
+    <button onclick="newFile(); closeMobileMenu()">New File <span class="menu-kbd">Ctrl+N</span></button>
+    <button onclick="openFile(); closeMobileMenu()">Open File… <span class="menu-kbd">Ctrl+O</span></button>
+    <button onclick="saveFile(); closeMobileMenu()">Download / Save <span class="menu-kbd">Ctrl+S</span></button>
+    <button onclick="saveFileAs(); closeMobileMenu()">Save As… <span class="menu-kbd">Ctrl+Shift+S</span></button>
+    <button onclick="closeCurrentTab(); closeMobileMenu()">Close Tab <span class="menu-kbd">Ctrl+W</span></button>
+  </div>
+  <div class="m-section">
+    <div class="m-label">Edit</div>
+    <button onclick="editor.execCommand('undo'); closeMobileMenu()">Undo <span class="menu-kbd">Ctrl+Z</span></button>
+    <button onclick="editor.execCommand('redo'); closeMobileMenu()">Redo <span class="menu-kbd">Ctrl+Y</span></button>
+    <button onclick="toggleFind(); closeMobileMenu()">Find <span class="menu-kbd">Ctrl+F</span></button>
+    <button onclick="selectAll(); closeMobileMenu()">Select All <span class="menu-kbd">Ctrl+A</span></button>
+  </div>
+  <div class="m-section">
+    <div class="m-label">View</div>
+    <button onclick="toggleTheme(); closeMobileMenu()">Toggle Theme <span class="menu-kbd">Ctrl+Shift+T</span></button>
+    <button onclick="increaseFontSize(); closeMobileMenu()">Zoom In</button>
+    <button onclick="decreaseFontSize(); closeMobileMenu()">Zoom Out</button>
+    <button onclick="toggleWrap(); closeMobileMenu()">Toggle Word Wrap <span class="menu-kbd">Alt+Z</span></button>
+  </div>
+  <div class="m-section">
+    <div class="m-label">Help</div>
+    <button onclick="openAbout(); closeMobileMenu()">About Nova</button>
+    <button onclick="openShortcuts(); closeMobileMenu()">Keyboard Shortcuts</button>
   </div>
 </div>
 
@@ -1080,8 +1181,19 @@ function closeMenus() {
   document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('open'));
 }
 
+function toggleMobileMenu() {
+  document.getElementById('mobileDropdown').classList.toggle('open');
+}
+
+function closeMobileMenu() {
+  document.getElementById('mobileDropdown').classList.remove('open');
+}
+
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.menubar')) closeMenus();
+  if (!e.target.closest('.mobile-menu-btn') && !e.target.closest('.mobile-dropdown')) {
+    closeMobileMenu();
+  }
 });
 
 /* ────────────────────────────────────────────
