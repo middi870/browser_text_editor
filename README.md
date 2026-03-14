@@ -28,12 +28,12 @@ A fast, clean, browser-based code and text editor. No installation, no backend â
 No build step needed. Just open `textEditor.html` in any modern browser.
 
 ```bash
-git clone https://github.com/middi870/browser-text-editor
-cd browser-text-editor
+git clone https://github.com/middi870/browser_text_editor
+cd browser_text_editor
 # open textEditor.html in your browser
 ```
 
-Or use it live at: **[middi870.github.io/browser-text-editor](https://middi870.github.io/browser-text-editor)**
+Or use it live at: **[middi870.github.io/browser_text_editor/textEditor.html](https://middi870.github.io/browser_text_editor/textEditor.html)**
 
 ---
 
